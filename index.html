@@ -85,11 +85,17 @@
     </div>
 
     <script>
+        // Menangani submit form
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // Mencegah form dikirimkan secara default
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                alert("Username atau password tidak boleh kosong!");
+                return;
+            }
 
             // Ganti dengan URL Google Apps Script
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzFQ5CKK2U8REtGUSuiQnqh5QszR2872SWXcecqHIwYAydxm5dXaLEWgt1rxnIhDS51/exec';  // Ganti dengan URL Web App yang benar
@@ -120,6 +126,7 @@
                 })
                 .catch(error => {
                     console.error("Error:", error);
+                    alert("Terjadi kesalahan, silakan coba lagi.");
                 });
         });
     </script>
