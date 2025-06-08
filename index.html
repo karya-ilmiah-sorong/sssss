@@ -1,135 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login with Google Sheets</title>
+    <title>Login</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            width: 350px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 24px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #3367d6;
-        }
-        #message {
-            margin-top: 20px;
-            text-align: center;
-            color: #d32f2f;
-            font-weight: bold;
-        }
+        body { font-family: Arial; max-width: 400px; margin: 0 auto; padding: 20px; }
+        .login-box { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background: #4285f4; color: white; border: none; padding: 10px; width: 100%; }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login System</h1>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
-        <div id="message"></div>
+    <div class="login-box">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p id="message"></p>
     </div>
 
     <script>
-        // Ganti dengan URL Web App Anda
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz5kyQg03Wq3hgj-lUk4mVKHrr4I1vM4CEM7LT-VNW2JF-rW4KXS3-tKhjcIVdPxjfwJQ/exec';
-        
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz5kyQg03Wq3hgj-lUk4mVKHrr4I1vM4CEM7LT-VNW2JF-rW4KXS3-tKhjcIVdPxjfwJQ/exec'; // Ganti dengan URL deploy Anda
+
+        async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('message');
             
-            messageDiv.textContent = 'Memproses...';
-            messageDiv.style.color = '#333';
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
             
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    messageDiv.textContent = 'Login berhasil! Mengarahkan...';
-                    messageDiv.style.color = 'green';
-                    
-                    // Redirect berdasarkan level
-                    setTimeout(() => {
-                        window.location.href = ${data.level}.html;
-                    }, 1000);
-                    
-                    // Simpan session (sederhana)
-                    sessionStorage.setItem('auth', JSON.stringify({
-                        username,
-                        level: data.level,
-                        loggedIn: true
-                    }));
-                } else {
-                    messageDiv.textContent = data.message || 'Login gagal';
-                    messageDiv.style.color = 'red';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                messageDiv.textContent = 'Terjadi kesalahan koneksi';
-                messageDiv.style.color = 'red';
+            const result = await response.json();
+            
+            if (result.success) {
+                document.getElementById('message').innerHTML = 
+                    Login berhasil! Level: ${result.level};
+                // Simpan data login
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userLevel', result.level);
+            } else {
+                document.getElementById('message').innerHTML = 
+                    'Login gagal! Cek username/password';
             }
-        });
+        }
     </script>
 </body>
 </html>
